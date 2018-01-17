@@ -30,7 +30,12 @@ class Element(ABC):
         print(ind)
         print(str)
         print("Printing Done!")
-
+    
+    def setElementConnectivities(self,indel,nind=None):
+        nind = len(indel) if nind is None else nind
+        ind = np.copy(indel[0:nind])
+        print(ind)
+    
 #2D Quadrilateral Element
 class ElementQuad2D(Element):
     def __init__(self):
