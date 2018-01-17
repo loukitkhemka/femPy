@@ -9,21 +9,19 @@ from abc import ABC, abstractmethod
 import numpy as np
 
 class Element(ABC):
-    #class elements(Enum):
-        #quad8 = 1
-        #hex20 = 1
-
-    def newElement(name):
-        if (name == "quad8"):
-            return ElementQuad2D()
-        elif (name == "hex20"):
-            return ElementQuad3D()
-        else:
-            print("Incorrect Element Type: "+ name)
     
+    
+    def newElement(name):
+        elements = {'quad8': ElementQuad2D,
+                    'hex20': ElementQuad3D}
+        try:
+            return elements[name]()
+        except:
+            print("Incorrect Element Type:"+ name)
+                
     
     @abstractmethod
-    def __init__(self, name, nind, nstress):
+    def __init__(self, name, nind, nstress): # Not yet complete
         self.name = name
         self.nind = nind
         self.nstress = nstress
@@ -33,11 +31,13 @@ class Element(ABC):
         print(str)
         print("Printing Done!")
 
+#2D Quadrilateral Element
 class ElementQuad2D(Element):
     def __init__(self):
         print("Instantiating ElementQuad2D class")
         super().__init__("quad8",8,4)
 
+#3D Quadrilateral Element
 class ElementQuad3D(Element):
     def __init__(self):
         super().__init__("hex20",20,8)
