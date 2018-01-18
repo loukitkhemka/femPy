@@ -31,11 +31,19 @@ class Element(ABC):
         print(str)
         print("Printing Done!")
     
-    def setElementConnectivities(self,indel,nind=None):
-        nind = len(indel) if nind is None else nind
-        ind = np.copy(indel[0:nind])
-        print(ind)
+    #Set Element Connectivities
+    #indel - Connectivity Numbers
+    #nind - Number of element Nodes
+    def setElemConnectivities(self,indel, nind=None):
+        self.ind = np.copy(indel[0:len(indel) if nind is None else nind])
+        print(self.ind)
     
+    def setMaterialName(self,name):
+        self.matName = name
+        print(self.matName)
+    
+    #Do setlemXy and setElemXyT after fininshing fem class
+
 #2D Quadrilateral Element
 class ElementQuad2D(Element):
     def __init__(self):
@@ -51,4 +59,7 @@ class ElementQuad3D(Element):
 #e1=ElementQuad2D()
 #e2=Element.newElement("quad8")
 e3=Element.newElement("hex20")
-        
+e3.setElemConnectivities([1.0,2.0,3.0],2)
+e3.setElemConnectivities([1.0,2.0])
+e3.setMaterialName("elastic")
+print(e3.matName)        
