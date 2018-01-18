@@ -26,7 +26,7 @@ class Element(ABC):
         self.nind = nind
         self.nstress = nstress
         ind = np.zeros(self.nind,dtype=np.int)
-        str = np.zeros(self.nstress)
+        str = StressContainer(self.nstress)
         print(ind)
         print(str)
         print("Printing Done!")
@@ -55,6 +55,34 @@ class ElementQuad3D(Element):
     def __init__(self):
         super().__init__("hex20",20,8)
 
+class StressContainer(object):
+    def __init__(self,nDim):
+        self.sStress = np.zeros(2*self.nDim) #Vector of Accumulated Stress
+        self.dStress = np.zeros(2*self.nDim) #Vector of stress increment
+
+
+class ShapeQuad2D(object):
+    # Degeneration Check.If the element is triangular, then
+    # the method returns a local number (starting from 0) of the 
+    # mid-side node opposite to degenerated side
+    # ind - connectivity numbers
+    
+    
+    def degeneration(self,ind):
+        deg = 0
+        for i in range(0,7,2):
+            print(i)
+            if ind[i] is ind[i+1]:
+                deg = (i+5) % 8
+                break
+        return deg
+
+
+
+
+
+
+
 
 #e1=ElementQuad2D()
 #e2=Element.newElement("quad8")
@@ -62,4 +90,9 @@ e3=Element.newElement("hex20")
 e3.setElemConnectivities([1.0,2.0,3.0],2)
 e3.setElemConnectivities([1.0,2.0])
 e3.setMaterialName("elastic")
-print(e3.matName)        
+print(e3.matName)       
+i = range(7,2)
+for j in i:
+    print(j)
+e = ShapeQuad2D()
+e.degeneration([1.0,2.0,3.0,3.0,5.0,6.0,7.0,7.0])
