@@ -62,12 +62,12 @@ class StressContainer(object):
 
 
 class ShapeQuad2D(object):
+    
     # Degeneration Check.If the element is triangular, then
     # the method returns a local number (starting from 0) of the 
     # mid-side node opposite to degenerated side
+    # For further understanding refer to fig 10.5(b) on page 105 of Nikishkov's Textbook
     # ind - connectivity numbers
-    
-    
     def degeneration(self,ind):
         deg = 0
         for i in range(0,7,2):
