@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jan 16 14:24:44 2018
+Created on Wed Jan 17 18:16:15 2018
 
-@author: lokith
+@author: Loukit
 """
+
 from abc import ABC, abstractmethod
 #from enum import Enum
 import numpy as np
@@ -26,24 +27,17 @@ class Element(ABC):
         self.nind = nind
         self.nstress = nstress
         ind = np.zeros(self.nind,dtype=np.int)
-        str = StressContainer(self.nstress)
+        str = np.zeros(self.nstress)
         print(ind)
         print(str)
         print("Printing Done!")
     
-    #Set Element Connectivities
-    #indel - Connectivity Numbers
-    #nind - Number of element Nodes
-    def setElemConnectivities(self,indel, nind=None):
-        self.ind = np.copy(indel[0:len(indel) if nind is None else nind])
-        print(self.ind)
-    
-    def setMaterialName(self,name):
-        self.matName = name
-        print(self.matName)
-    
-    #Do setlemXy and setElemXyT after fininshing fem class
-
+        def setElementConnectivities(self,indel,nind=None):
+            nind = len(indel) if nind is None else nind
+            ind = np.copy(indel[0:nind])
+            print(ind)
+        
+        
 #2D Quadrilateral Element
 class ElementQuad2D(Element):
     def __init__(self):
@@ -69,15 +63,48 @@ class ShapeQuad2D(object):
     # For further understanding refer to fig 10.5(b) on page 105 of Nikishkov's Textbook
     # ind - connectivity numbers
     def degeneration(self,ind):
-        deg = 0
+        print("Degeneracy Check")
+        self.deg = 0
         for i in range(0,7,2):
-            print(i)
+            #print(i)
             if ind[i] is ind[i+1]:
-                deg = (i+5) % 8
+                self.deg = (i+5) % 8
                 break
-        return deg
-
-
+        print(self.deg)
+        return self.deg
+    """
+    While corner nodes are always present in the element, Intermediate midside
+    nodes can be absent in any order. Absence of a midside node is coded by a 
+    zero connectivity number in ind array.
+    """
+    #Shape functions
+    #xi,et - local coordinates
+    #ind[8] - element connectivities
+    #an[8] - shape functions (output)
+    def shape(self, xi, et, ind):
+        self.an = np.zeros(8)
+        if (ind[1] > 0):
+            self.an[1] = 0.5*(1-xi*xi)*(1-et)
+        if (ind[3] > 0):
+            self.an[3] = 0.5*(1-et*et)*(1+xi)
+        if (ind[5] > 0):
+            self.an[5] = 0.5*(1-xi*xi)*(1+et)
+        if (ind[7] > 0):
+            self.an[7] = 0.5*(1-et*et)*(1-xi)
+        
+        self.an[0] = 0.25*(1-xi)*(1-et)-0.5*(self.an[7]+self.an[1])
+        self.an[2] = 0.25*(1+xi)*(1-et)-0.5*(self.an[1]+self.an[3])
+        self.an[4] = 0.25*(1+xi)*(1+et)-0.5*(self.an[3]+self.an[5])
+        self.an[6] = 0.25*(1-xi)*(1+et)-0.5*(self.an[5]+self.an[7])
+        
+        self.degeneration(ind) #Checking for Degeneracy by calling Degeneracy Method here
+        
+        if (self.deg > 0 and ind[1]>0 and ind[3]>0 and ind[5] > 0 and ind[7]>0):
+            delta = 0.125*(1-xi*xi)*(1-et*et)
+            self.an[self.deg-1] += delta
+            self.an[self.deg] -= 2.0*delta
+            self.an[(self.deg+1)%8] +=delta
+        return self.an
 
 
 
@@ -96,3 +123,5 @@ for j in i:
     print(j)
 e = ShapeQuad2D()
 e.degeneration([1.0,2.0,3.0,3.0,5.0,6.0,7.0,7.0])
+an = e.shape(1.0,1.0,[1,1,3,4,5,6,7,8])
+print(an)
