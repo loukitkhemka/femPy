@@ -92,7 +92,6 @@ class ElasticMaterial(Material):
         emat[0,0]=emat[1,1]=emat[2,2]=beta
         emat[3,3]=emat[4,4]=emat[5,5]=mu
         emat[0,1]=emat[1,0]=emat[0,2]=emat[2,0]=emat[1,2]=emat[2,1]=lamda
-        print(emat)
     
     def ElasticityMatrix2D(self,emat):
         mu=self.getMu()
